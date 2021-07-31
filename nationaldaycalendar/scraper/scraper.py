@@ -1,23 +1,44 @@
 from urllib.request import urlopen
 import urllib
 from bs4 import BeautifulSoup
+from datetime import date
+import calendar
 
-def national_days_by_month(month):
+def get_national_days():
 
-    url = f"https://nationaldaycalendar.com/{month}/"
+    today = date.today()
 
-    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}
+    if today.month == 7 and today.day == 31:
 
-    req = urllib.request.Request(url=url, headers=headers)
+        # national_days = []
 
-    page = urlopen(req)
+        months = calendar.month_name
+        for month in months:
 
-    html_bytes = page.read()
-    html = html_bytes.decode("utf-8")
+            url = f"https://nationaldaycalendar.com/{month}/"
 
-    soup = BeautifulSoup(html, "html.parser")
+            headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}
 
-    soup = soup.find(id="et-boc")
+            req = urllib.request.Request(url=url, headers=headers)
 
-    return soup.get_text()
+            page = urlopen(req)
 
+            html_bytes = page.read()
+            html = html_bytes.decode("utf-8")
+
+            soup = BeautifulSoup(html, 'html.parser')
+
+            soup = soup.find(id="et-boc")
+
+            soup_text = soup.get_text()
+
+            soup_list = soup_text.split('\n')
+
+            soup_list = [i for i in soup_list if i != '' and i != ' ']
+
+            print(soup_list)
+
+    else:
+        raise Exception("DateError")
+
+get_national_days()
