@@ -1,23 +1,27 @@
 from urllib.request import urlopen
 import urllib
 from bs4 import BeautifulSoup
+from datetime import date
 
 def national_days_by_month(month):
 
-    url = f"https://nationaldaycalendar.com/{month}/"
+    today = date.today()
 
-    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}
+    if today.month == 7 and today.day == 31:
 
-    req = urllib.request.Request(url=url, headers=headers)
+        url = f"https://nationaldaycalendar.com/{month}/"
 
-    page = urlopen(req)
+        headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}
 
-    html_bytes = page.read()
-    html = html_bytes.decode("utf-8")
+        req = urllib.request.Request(url=url, headers=headers)
 
-    soup = BeautifulSoup(html, "html.parser")
+        page = urlopen(req)
 
-    soup = soup.find(id="et-boc")
+        html_bytes = page.read()
+        html = html_bytes.decode("utf-8")
 
-    return soup.get_text()
+        soup = BeautifulSoup(html, "html.parser")
 
+        soup = soup.find(id="et-boc")
+
+        return soup.get_text()
