@@ -2,7 +2,7 @@ from urllib.request import urlopen
 import urllib
 from bs4 import BeautifulSoup
 
-def national_day_by_month(month):
+def national_days_by_month(month):
 
     url = f"https://nationaldaycalendar.com/{month}/"
 
@@ -19,5 +19,5 @@ def national_day_by_month(month):
 
     soup = soup.find(id="et-boc")
 
-    print(soup.get_text())
+    return soup.get_text()
 
