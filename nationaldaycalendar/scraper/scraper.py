@@ -7,7 +7,7 @@ def national_days_by_month(month):
 
     today = date.today()
 
-    if today.month == 7 and today.day == 31:
+    if today.month == 8 and today.day == 31:
 
         url = f"https://nationaldaycalendar.com/{month}/"
 
@@ -25,3 +25,5 @@ def national_days_by_month(month):
         soup = soup.find(id="et-boc")
 
         return soup.get_text()
+    else:
+        raise Exception("DateError")
