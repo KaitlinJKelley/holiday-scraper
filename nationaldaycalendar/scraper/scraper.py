@@ -28,15 +28,15 @@ def get_national_days():
 
             soup = BeautifulSoup(html, 'html.parser')
 
-            soup = soup.find(id="et-boc")
+            div = soup.find(id="et-boc")
 
-            soup_text = soup.get_text()
+            div_text = div.get_text()
 
-            soup_list = soup_text.split('\n')
+            text_list = div_text.split('\n')
 
-            soup_list = [i for i in soup_list if i != '' and i != ' ']
+            days_list = [i for i in text_list if i != '' and i != ' ']
 
-            national_days.append(soup_list)
+            national_days.append(days_list)
         
         national_days.pop(0)
 
