@@ -3,6 +3,7 @@ import urllib
 from bs4 import BeautifulSoup
 from datetime import date
 import calendar
+import re
 
 def get_national_days():
 
@@ -24,25 +25,34 @@ def get_national_days():
             page = urlopen(req)
 
             html_bytes = page.read()
-            html = html_bytes.decode("utf-8")
 
-            soup = BeautifulSoup(html, 'html.parser')
+            html_decoded = html_bytes.decode("utf-8")
 
+            soup = BeautifulSoup(html_decoded, 'html.parser')
+
+            # Search by ID to get div tags containing national day information
             div = soup.find(id="et-boc")
 
             div_text = div.get_text()
 
+            # Remove line breaks
             text_list = div_text.split('\n')
 
+            # Remove blank spaces left after split
             days_list = [i for i in text_list if i != '' and i != ' ']
 
+            # Removes spaces converted to regex during scrape
+            days_list = [re.sub(r'\xa0', '', string) for string in days_list]
+
             national_days.append(days_list)
-        
+
+        # Remove list that does not represent a month of national days
         national_days.pop(0)
 
         print(national_days)
 
     else:
+        # If function is invoked on a date other than the one allowed
         raise Exception("DateError")
 
 get_national_days()
