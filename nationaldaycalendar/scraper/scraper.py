@@ -8,9 +8,9 @@ def get_national_days():
 
     today = date.today()
 
-    if today.month == 7 and today.day == 31:
+    if today.month == 8 and today.day == 1:
 
-        # national_days = []
+        national_days = []
 
         months = calendar.month_name
         for month in months:
@@ -36,7 +36,11 @@ def get_national_days():
 
             soup_list = [i for i in soup_list if i != '' and i != ' ']
 
-            print(soup_list)
+            national_days.append(soup_list)
+        
+        national_days.pop(0)
+
+        print(national_days)
 
     else:
         raise Exception("DateError")
