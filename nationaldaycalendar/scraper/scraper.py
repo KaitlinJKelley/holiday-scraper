@@ -65,6 +65,7 @@ def get_national_days():
             #     }
             # }
 
+            # Container for all national days
             national_days[month] = {}
             
             for string in days_list:
@@ -99,7 +100,7 @@ def get_national_days():
                 except:
                     # The day didn't change, so add the string onto whatever day we're using
                     national_days[month][day].append(string)
-                    
+
         return national_days
 
     else:
