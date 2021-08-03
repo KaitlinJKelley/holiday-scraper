@@ -4,13 +4,9 @@ from bs4 import BeautifulSoup
 from datetime import date
 import calendar
 import re
-import time
 import concurrent.futures
 
-# months = list(calendar.month_name)
-
 def get_national_days_for_month(month):
-    # months = list(calendar.month_name)
 
     url = f"https://nationaldaycalendar.com/{month}/"
 
@@ -27,12 +23,10 @@ def get_national_days_for_month(month):
     soup = BeautifulSoup(html_decoded, 'html.parser')
 
     # Search by ID to get div tags containing national day information
-    div = soup.find(id="et-boc")
-
-    div_text = div.get_text()
+    div = soup.find(id="et-boc").get_text()
 
     # Remove line breaks
-    text_list = div_text.split('\n')
+    text_list = div.split('\n')
 
     # Remove blank spaces left after split
     days_list = [i for i in text_list if i != '' and i != ' ' and i!= "  "]
@@ -113,7 +107,7 @@ def get_all_national_days():
                         # The day didn't change, so add the string onto whatever day we're using
                         national_days[month][day].append(string)
 
-            return national_days
+            print(national_days)
     
     else:
         # If function is invoked on a date other than the one allowed
