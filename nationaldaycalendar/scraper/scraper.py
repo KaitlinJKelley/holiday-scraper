@@ -7,10 +7,10 @@ import re
 import time
 import concurrent.futures
 
-months = list(calendar.month_name)
+# months = list(calendar.month_name)
 
 def get_national_days_for_month(month):
-    months = list(calendar.month_name)
+    # months = list(calendar.month_name)
 
     url = f"https://nationaldaycalendar.com/{month}/"
 
@@ -64,7 +64,7 @@ def get_all_national_days():
 
             days_lists = executor.map(get_national_days_for_month, months)
 
-            for list in days_lists:
+            for i, days_list in enumerate(days_lists):
                 # Example of final object
                 # {
                 #     month: {
@@ -76,11 +76,11 @@ def get_all_national_days():
                 # }
 
                 # Container for all national days
-                month = months[list]
+                month = months[i]
 
                 national_days[month] = {}
                 
-                for string in days_lists:
+                for string in days_list:
                     try:
                         day_check = string.split(" ")
 
@@ -95,17 +95,17 @@ def get_all_national_days():
                         pass
 
                     # Removes suffixes such as st, nd, rd, th from end of numbers (April)
-                    day_check = [i for i in day_check if i.isdigit()]
+                    day_checked = [i for i in day_check if i.isdigit()]
 
                     # Join back remaining digits, if any
-                    day_check = "".join(day_check)
+                    day_checked = "".join(day_checked)
 
                     try: 
                         # Convert string to integer
-                        int(day_check)
+                        int(day_checked)
 
                         # If successful, reassign day
-                        day = day_check
+                        day = day_checked
 
                         # Add a list to hold national days on this day in this month
                         national_days[month][day] = []
@@ -113,16 +113,8 @@ def get_all_national_days():
                         # The day didn't change, so add the string onto whatever day we're using
                         national_days[month][day].append(string)
 
-            print(national_days)
+            return national_days
     
     else:
         # If function is invoked on a date other than the one allowed
         raise Exception("DateError")
-
-start = time.perf_counter()
-
-get_all_national_days()
-
-end = time.perf_counter()
-
-print(f"Ran in {end - start} seconds")
