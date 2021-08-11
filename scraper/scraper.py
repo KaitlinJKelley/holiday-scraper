@@ -112,3 +112,5 @@ def get_all_national_days():
     else:
         # If function is invoked on a date other than the one allowed
         raise Exception("DateError")
+
+print("RAN")
