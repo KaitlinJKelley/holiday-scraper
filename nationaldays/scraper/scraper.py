@@ -34,74 +34,74 @@ def get_national_days_for_month(month):
     # Removes spaces converted to regex during scrape
     days_list = [re.sub(r'\xa0', ' ', string) for string in days_list]
 
-    # # There is one double spaced empty string
-    # days_list.remove("  ")
     # October and December don't have titles at index 0, 
     # so only pop(0) if the string does not contain a digit from 1 - 31
     if days_list[0].split(" ")[1].isdigit() == False or int(days_list[0].split(" ")[1]) > 31:
         days_list.pop(0)
     
-    return days_list
+    # Example of final object
+    #     month: {
+    #         day of month: [national day, national day]
+    #     }
 
-def get_all_national_days():
+    month_days = {}
+    
+    for string in days_list:
+        try:
+            day_check = string.split(" ")
+
+            # August contains a leading space left from replacement of \xa0
+            if day_check[0] == "":
+                day_check.pop(0)
+
+            day_check = day_check[1]
+
+        except:
+            # For single index holidays which will throw an error on the split
+            pass
+
+        # Removes suffixes such as st, nd, rd, th from end of numbers (April)
+        day_checked = [i for i in day_check if i.isdigit()]
+
+        # Join back remaining digits, if any
+        day_checked = "".join(day_checked)
+
+        try: 
+            # Convert string to integer
+            int(day_checked)
+
+            # If successful, reassign day
+            day = day_checked
+
+            # Add a list to hold national days on this day in this month
+            month_days[day] = []
+        except:
+            # The day didn't change, so add the string onto whatever day we're using
+            if "proclamation" not in string.lower():
+                month_days[day].append(string)
+        
+                
+    return month_days
+
+
+def update_national_days_for_month():
+    pass
+
+# Use this function to set up the initial database
+def start_database():
     
     months = list(calendar.month_name)
 
     # Removes empty string at beginning of list
     months.pop(0)
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        national_days = {}
+    for month in months:
+        month_days = get_national_days_for_month(month)
 
-        days_lists = executor.map(get_national_days_for_month, months)
+        print(month_days)
 
-        for i, days_list in enumerate(days_lists):
-            # Example of final object
-            # {
-            #     month: {
-            #         day of month: [national day, national day]
-            #     }
-            #     month: {
-            #         day of month: [national day, national day]
-            #     }
-            # }
+start_database()
 
-            # Container for all national days
-            month = months[i]
 
-            national_days[month] = {}
-            
-            for string in days_list:
-                try:
-                    day_check = string.split(" ")
 
-                    # August contains a leading space left from replacement of \xa0
-                    if day_check[0] == "":
-                        day_check.pop(0)
-
-                    day_check = day_check[1]
     
-                except:
-                    # For single index holidays which will throw an error on the split
-                    pass
-
-                # Removes suffixes such as st, nd, rd, th from end of numbers (April)
-                day_checked = [i for i in day_check if i.isdigit()]
-
-                # Join back remaining digits, if any
-                day_checked = "".join(day_checked)
-
-                try: 
-                    # Convert string to integer
-                    int(day_checked)
-
-                    # If successful, reassign day
-                    day = day_checked
-
-                    # Add a list to hold national days on this day in this month
-                    national_days[month][day] = []
-                except:
-                    # The day didn't change, so add the string onto whatever day we're using
-                    national_days[month][day].append(string)
-
-        return national_days
