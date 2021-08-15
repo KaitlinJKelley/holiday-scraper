@@ -1,10 +1,10 @@
+from nationaldays.config.config import config
 from urllib.request import urlopen
 import urllib
 from bs4 import BeautifulSoup
-from datetime import date
 import calendar
 import re
-import concurrent.futures
+import psycopg2
 
 def get_national_days_for_month(month):
 
@@ -79,8 +79,7 @@ def get_national_days_for_month(month):
             # The day didn't change, so add the string onto whatever day we're using
             if "proclamation" not in string.lower():
                 month_days[day].append(string)
-        
-                
+                  
     return month_days
 
 
@@ -95,12 +94,26 @@ def start_database():
     # Removes empty string at beginning of list
     months.pop(0)
 
+    try:
+        # read connection parameters
+        params = config()
+
+        # connect to the PostgreSQL server
+        conn = psycopg2.connect(**params)
+		
+        # create a cursor
+        cursor = conn.cursor()
+        
+	# execute a statement
+        cursor.execute('SELECT version()')
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+
     for month in months:
-        month_days = get_national_days_for_month(month)
+        month_days = get_national_days_for_month(month)  
 
-        print(month_days)
+        print(month_days)          
 
-start_database()
 
 
 

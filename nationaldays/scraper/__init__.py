@@ -1,1 +1,1 @@
-from .scraper import get_all_national_days
+from .scraper import start_database

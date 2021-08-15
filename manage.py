@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
+from nationaldays.scraper.scraper import start_database
 import os
 import sys
 
@@ -19,4 +20,5 @@ def main():
 
 
 if __name__ == '__main__':
+    start_database()
     main()
