@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import calendar
 import re
 import psycopg2
+import datetime
 
 def get_national_days_for_month(month):
 
@@ -64,6 +65,8 @@ def get_national_days_for_month(month):
         day_checked = [i for i in day_check if i.isdigit()]
 
         # Join back remaining digits, if any
+        if len(day_checked) == 1:
+            day_checked.insert(0, "0")
         day_checked = "".join(day_checked)
 
         try: 
@@ -105,14 +108,30 @@ def start_database():
         cursor = conn.cursor()
         
 	# execute a statement
-        cursor.execute('SELECT version()')
+        # cursor.execute('SELECT version()')
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
     for month in months:
+        today = datetime.date.today()
+        year=today.year
         month_days = get_national_days_for_month(month)  
+        # values = []
 
-        print(month_days)          
+        for day in month_days:
+            date_str = f"{year}-{month}-{day}"
+            try:
+                date = (datetime.datetime.strptime(f"{year}-{month}-{day}",'%Y-%B-%d'))
+            except ValueError:
+                pass
+            # date_str = date.strftime('%Y-%m-%d')
+            for nat_day in month_days[day]:
+            #     values.append((date_str, nat_day))
+        
+                cursor.execute("INSERT INTO nationaldays_day(date, name) VALUES (%s, %s) ", (date, nat_day))
+                conn.commit()
+            
+ 
 
 
 
