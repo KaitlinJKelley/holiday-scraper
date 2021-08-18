@@ -90,6 +90,7 @@ def get_national_days_for_month(month):
                   
     return month_days
 
+# TODO: Use APScheduler to execute monthly
 def national_days_for_month(month=None):
     try:
         # read connection parameters
