@@ -35,6 +35,7 @@ def get_national_days_for_month(month):
     # Removes spaces converted to regex during scrape
     days_list = [re.sub(r'\xa0', ' ', string) for string in days_list]
 
+    # Removes extra spaces in a string left by conversion above
     days_list = [i.replace("  ", " ") for i in days_list]
 
     # October and December don't have titles at index 0, 
@@ -90,17 +91,7 @@ def get_national_days_for_month(month):
     return month_days
 
 
-def update_national_days_for_month():
-    pass
-
-# Use this function to set up the initial database
-def start_database():
-    
-    months = list(calendar.month_name)
-
-    # Removes empty string at beginning of list
-    months.pop(0)
-
+def national_days_for_month(month=None):
     try:
         # read connection parameters
         params = config()
@@ -111,33 +102,70 @@ def start_database():
         # create a cursor
         cursor = conn.cursor()
         
-	# execute a statement
-        # cursor.execute('SELECT version()')
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+
     values = []
 
-    for month in months:
-        today = datetime.date.today()
-        year=today.year
-        month_days = get_national_days_for_month(month)  
-        
+    today = datetime.date.today()
+    year=today.year
 
-        for day in month_days:
-            try:
-                date = (datetime.datetime.strptime(f"{year}-{month}-{day}",'%Y-%B-%d'))
+    if month == None:
+        month = calendar.month_name[today.month]
 
-                for nat_day in month_days[day]:
-                    values.append((date, nat_day,))
-            except ValueError:
-                pass
-        
+    month_days = get_national_days_for_month(month)  
+    
+    for day in month_days:
+        try:
+            date = (datetime.datetime.strptime(f"{year}-{month}-{day}",'%Y-%B-%d'))
+
+            for nat_day in month_days[day]:
+                values.append((date, nat_day,))
+        except ValueError:
+            pass
+    # Used .format to add conflicting characters around %s 
+    cursor.execute("DELETE FROM nationaldays_day WHERE TO_CHAR(date, 'Month-DD-YYYY') LIKE %s", ('%{}%'.format(month),))
+
     cursor.executemany("INSERT INTO nationaldays_day(date, name) VALUES (%s, %s);", (values))
     conn.commit()
-            
- 
 
-
-
-
+# Use this function to set up the initial database
+def start_database():
     
+    months = list(calendar.month_name)
+
+    # Removes empty string at beginning of list
+    months.pop(0)
+
+    # try:
+    #     # read connection parameters
+    #     params = config()
+
+    #     # connect to the PostgreSQL server
+    #     conn = psycopg2.connect(**params)
+		
+    #     # create a cursor
+    #     cursor = conn.cursor()
+        
+    # except (Exception, psycopg2.DatabaseError) as error:
+    #     print(error)
+
+    # values = []
+
+    for month in months:
+        national_days_for_month(month)
+        # today = datetime.date.today()
+        # year=today.year
+        # month_days = get_national_days_for_month(month)  
+        
+        # for day in month_days:
+        #     try:
+        #         date = (datetime.datetime.strptime(f"{year}-{month}-{day}",'%Y-%B-%d'))
+
+        #         for nat_day in month_days[day]:
+        #             values.append((date, nat_day,))
+        #     except ValueError:
+        #         pass
+        
+        # cursor.executemany("INSERT INTO nationaldays_day(date, name) VALUES (%s, %s);", (values))
+        # conn.commit()

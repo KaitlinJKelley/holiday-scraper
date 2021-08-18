@@ -1,1 +1,1 @@
-from .scraper import start_database
+from .scraper import (start_database, national_days_for_month)
