@@ -21,5 +21,5 @@ def main():
 
 if __name__ == '__main__':
     # start_database()
-    national_days_for_month()
+    national_days_for_month('February')
     main()

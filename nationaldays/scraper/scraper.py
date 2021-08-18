@@ -90,7 +90,6 @@ def get_national_days_for_month(month):
                   
     return month_days
 
-
 def national_days_for_month(month=None):
     try:
         # read connection parameters
@@ -137,35 +136,7 @@ def start_database():
     # Removes empty string at beginning of list
     months.pop(0)
 
-    # try:
-    #     # read connection parameters
-    #     params = config()
-
-    #     # connect to the PostgreSQL server
-    #     conn = psycopg2.connect(**params)
-		
-    #     # create a cursor
-    #     cursor = conn.cursor()
-        
-    # except (Exception, psycopg2.DatabaseError) as error:
-    #     print(error)
-
-    # values = []
-
     for month in months:
         national_days_for_month(month)
-        # today = datetime.date.today()
-        # year=today.year
-        # month_days = get_national_days_for_month(month)  
-        
-        # for day in month_days:
-        #     try:
-        #         date = (datetime.datetime.strptime(f"{year}-{month}-{day}",'%Y-%B-%d'))
-
-        #         for nat_day in month_days[day]:
-        #             values.append((date, nat_day,))
-        #     except ValueError:
-        #         pass
-        
-        # cursor.executemany("INSERT INTO nationaldays_day(date, name) VALUES (%s, %s);", (values))
-        # conn.commit()
+    
+    print("All days loaded to database!")
