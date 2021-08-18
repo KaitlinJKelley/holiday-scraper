@@ -35,6 +35,8 @@ def get_national_days_for_month(month):
     # Removes spaces converted to regex during scrape
     days_list = [re.sub(r'\xa0', ' ', string) for string in days_list]
 
+    days_list = [i.replace("  ", " ") for i in days_list]
+
     # October and December don't have titles at index 0, 
     # so only pop(0) if the string does not contain a digit from 1 - 31
     if days_list[0].split(" ")[1].isdigit() == False or int(days_list[0].split(" ")[1]) > 31:
@@ -62,7 +64,9 @@ def get_national_days_for_month(month):
             pass
 
         # Removes suffixes such as st, nd, rd, th from end of numbers (April)
-        day_checked = [i for i in day_check if i.isdigit()]
+        day_checked = ""
+        if len(string.split()) < 3:
+            day_checked = [i for i in day_check if i.isdigit()]
 
         # Join back remaining digits, if any
         if len(day_checked) == 1:
@@ -116,20 +120,19 @@ def start_database():
         today = datetime.date.today()
         year=today.year
         month_days = get_national_days_for_month(month)  
-        # values = []
+        values = []
 
         for day in month_days:
-            date_str = f"{year}-{month}-{day}"
             try:
                 date = (datetime.datetime.strptime(f"{year}-{month}-{day}",'%Y-%B-%d'))
+
+                for nat_day in month_days[day]:
+                    values.append((date, nat_day,))
             except ValueError:
                 pass
-            # date_str = date.strftime('%Y-%m-%d')
-            for nat_day in month_days[day]:
-            #     values.append((date_str, nat_day))
         
-                cursor.execute("INSERT INTO nationaldays_day(date, name) VALUES (%s, %s) ", (date, nat_day))
-                conn.commit()
+        cursor.executemany("INSERT INTO nationaldays_day(date, name) VALUES (%s, %s);", (values))
+        conn.commit()
             
  
 
