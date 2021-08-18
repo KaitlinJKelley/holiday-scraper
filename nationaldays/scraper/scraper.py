@@ -115,12 +115,13 @@ def start_database():
         # cursor.execute('SELECT version()')
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+    values = []
 
     for month in months:
         today = datetime.date.today()
         year=today.year
         month_days = get_national_days_for_month(month)  
-        values = []
+        
 
         for day in month_days:
             try:
@@ -131,8 +132,8 @@ def start_database():
             except ValueError:
                 pass
         
-        cursor.executemany("INSERT INTO nationaldays_day(date, name) VALUES (%s, %s);", (values))
-        conn.commit()
+    cursor.executemany("INSERT INTO nationaldays_day(date, name) VALUES (%s, %s);", (values))
+    conn.commit()
             
  
 
