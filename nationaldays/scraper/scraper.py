@@ -129,6 +129,8 @@ def national_days_for_month(month=None):
     cursor.executemany("INSERT INTO nationaldays_day(date, name) VALUES (%s, %s);", (values))
     conn.commit()
 
+    print(f"Handled national days for {month}")
+
 # Use this function to set up the initial database
 def start_database():
     
