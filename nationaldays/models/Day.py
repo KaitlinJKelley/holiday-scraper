@@ -1,6 +1,6 @@
-from typing import Text
 from django.db import models
-from django.db.models.fields import CharField, DateField, TextField
+from django.db.models.fields import CharField, IntegerField, TextField
+import datetime
 
 class Day(models.Model):
     date = DateField(auto_now=False, auto_now_add=False, null=False, default=None)
