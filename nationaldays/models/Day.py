@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.fields import CharField, IntegerField, TextField
+from django.db.models.fields import CharField, DateField, TextField
 import datetime
 
 class Day(models.Model):

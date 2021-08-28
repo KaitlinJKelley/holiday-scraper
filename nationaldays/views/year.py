@@ -16,13 +16,13 @@ class YearViewSet(ViewSet):
         # connect to the PostgreSQL server
         conn = psycopg2.connect(**params)
 
-        dict_cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        dict_cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         # create a cursor
         # cursor = conn.cursor()
 
         dict_cur.execute("""
-        SELECT id, date, name
+        SELECT id, date, name, day_history, day_about
         FROM nationaldays_day 
         """)
 
@@ -41,16 +41,15 @@ class YearViewSet(ViewSet):
         national_days_list = {}
 
         for day in national_days:
-            day_object = Day()
-            day_object.date = day.date
-            if day.date in national_days_list:
-                national_days_list[day.date].append({
-                    'name': day.name,
-                    'history': day.day_history,
-                    'about': day.day_about
-                })
-            else:
-                national_days_list[day.date] = []
+            day_dict = {
+                'name': day['name'],
+                'history': day['day_history'],
+                'about': day['day_about']
+            }
+            if day['date'] not in national_days_list:
+                national_days_list[day['date']] = []
+                
+            national_days_list[day['date']].append(day_dict)
 
         print(national_days_list)
 
