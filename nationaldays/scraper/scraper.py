@@ -116,18 +116,20 @@ def national_days_for_month(month=None):
     month_days = get_national_days_for_month(month)  
     
     for day in month_days:
-        try:
-            date = (datetime.datetime.strptime(f"{year}-{month}-{day}",'%Y-%B-%d'))
+    #     try:
+    #         date = (datetime.datetime.strptime(f"{year}-{month}-{day}",'%Y-%B-%d'))
 
-            for nat_day in month_days[day]:
-                values.append((date, nat_day,))
-        except ValueError:
-            pass
+        for nat_day in month_days[day]:
+            values.append((month, day, year, nat_day,))
+    #     except ValueError:
+    #         pass
     # Used .format to add conflicting characters around %s 
-    cursor.execute("DELETE FROM nationaldays_day WHERE TO_CHAR(date, 'Month-DD-YYYY') LIKE %s", ('%{}%'.format(month),))
+    cursor.execute("DELETE FROM nationaldays_day WHERE month LIKE %s", (month,))
 
-    cursor.executemany("INSERT INTO nationaldays_day(date, name) VALUES (%s, %s);", (values))
+    cursor.executemany("INSERT INTO nationaldays_day(month, day, year, name) VALUES (%s, %s, %s, %s);", (values))
     conn.commit()
+
+    print(f"Handled national days for {month}")
 
 # Use this function to set up the initial database
 def start_database():
