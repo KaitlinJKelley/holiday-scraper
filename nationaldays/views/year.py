@@ -6,6 +6,9 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 import psycopg2
 from nationaldays.config.config import config
+from http.client import HTTPResponse
+import json
+import datetime
 
 class YearViewSet(ViewSet):
     def list(self, request):
@@ -24,6 +27,7 @@ class YearViewSet(ViewSet):
         dict_cur.execute("""
         SELECT id, date, name, day_history, day_about
         FROM nationaldays_day 
+        Order By date
         """)
 
         national_days = dict_cur.fetchall()
@@ -46,24 +50,15 @@ class YearViewSet(ViewSet):
                 'history': day['day_history'],
                 'about': day['day_about']
             }
-            if day['date'] not in national_days_list:
-                national_days_list[day['date']] = []
+
+            str_date = datetime.date.strftime(day['date'], '%m-%d-%Y')
+
+            if str_date not in national_days_list:
+                national_days_list[str_date] = []
                 
-            national_days_list[day['date']].append(day_dict)
+            national_days_list[str_date].append(day_dict)
 
-        print(national_days_list)
-
-        return()
+        return(Response(national_days_list))
             
         # except (Exception, psycopg2.DatabaseError) as error:
         #     print(error)
-        
-
-
-# class NationalDaySerializer(serializers.ModelSerializer):
-
-#     class Meta:
-
-#         model = Day
-
-#         fields = '__all__'
