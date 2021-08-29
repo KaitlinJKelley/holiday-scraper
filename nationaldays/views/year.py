@@ -19,7 +19,7 @@ class YearViewSet(ViewSet):
             dict_cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
             
             dict_cur.execute("""
-            SELECT id, date, name, day_history, day_about
+            SELECT id, TO_CHAR(date, 'MM-DD-YYYY') as date, name, day_history, day_about
             FROM nationaldays_day 
             Order By date
             """)
@@ -45,14 +45,12 @@ class YearViewSet(ViewSet):
                     'about': day['day_about']
                 }
 
-                str_date = datetime.date.strftime(day['date'], '%m-%d-%Y')
-
-                if str_date not in national_days_dict:
-                    # Adds date to dictionary if it isn't already in the dictionary
-                    national_days_dict[str_date] = []
+                if day['date'] not in national_days_dict:
+                    # Adds 'date' to dictionary if it isn't already in the dictionary
+                    national_days_dict[day['date']] = []
                 
                 # Appends nation day dictionary to list of the date the national day occurs on 
-                national_days_dict[str_date].append(day_dict)
+                national_days_dict[day['date']].append(day_dict)
 
             return Response(national_days_dict)
                 
