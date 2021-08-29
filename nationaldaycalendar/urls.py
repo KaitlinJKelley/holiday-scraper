@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from nationaldays.views import YearViewSet, DayViewSet
+from nationaldays.views import YearViewSet, MonthViewSet
 from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
@@ -21,9 +21,10 @@ from rest_framework import routers
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register("year", YearViewSet, "day_year")
-router.register("month", DayViewSet, "day_month")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('year/<int:month>/', YearViewSet.retrieve),
+    path('year/<int:month>/<int:day>/', YearViewSet.day_days)
 ]

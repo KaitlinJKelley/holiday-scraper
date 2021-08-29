@@ -1,2 +1,2 @@
 from .year import YearViewSet
-from .day import DayViewSet
+from .month import MonthViewSet
