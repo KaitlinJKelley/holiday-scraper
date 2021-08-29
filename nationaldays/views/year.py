@@ -1,8 +1,11 @@
+from django.http.response import HttpResponse
+from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 import psycopg2
 from nationaldays.config.config import config
 import datetime
+import json
 
 class YearViewSet(ViewSet):
     def list(self, request):
@@ -81,6 +84,34 @@ class YearViewSet(ViewSet):
             national_days = dict_cur.fetchall()
 
             return Response(national_days)
+
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+
+    def day_days(self, month, day):
+        # Returns all national days on a given day of the month
+        try:
+            month_num, day_num = str(month).zfill(2), str(day).zfill(2)
+            
+            # read connection parameters
+            params = config()
+
+            # connect to the PostgreSQL server
+            conn = psycopg2.connect(**params)
+
+            # create a cursor; using RealDictCursor allows data to be accessed by column name
+            dict_cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            
+            dict_cur.execute("""
+            SELECT id, name, TO_CHAR(date, 'MM-DD-YYYY') as date, day_history, day_about
+            FROM nationaldays_day
+            WHERE TO_CHAR(date, 'MM-DD-YYYY') LIKE (%s)
+            Order By date
+            """, ('{}-{}%'.format(month_num, day_num),))
+
+            national_days = dict_cur.fetchall()
+            
+            return HttpResponse(json.dumps(national_days))
 
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)

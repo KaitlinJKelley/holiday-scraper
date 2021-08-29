@@ -21,10 +21,10 @@ from rest_framework import routers
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register("year", YearViewSet, "day_year")
-# router.register("month", MonthViewSet, "day_month")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
-    path('month/<int:month>/', MonthViewSet.day_all)
+    path('year/<int:month>/', YearViewSet.retrieve),
+    path('year/<int:month>/<int:day>/', YearViewSet.day_days)
 ]
