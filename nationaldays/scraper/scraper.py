@@ -1,3 +1,4 @@
+import tzlocal
 from nationaldays.config.config import config
 from urllib.request import urlopen
 import urllib
@@ -6,7 +7,10 @@ import calendar
 import re
 import psycopg2
 import datetime
-
+from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime
+from pytz import timezone
+ 
 def get_national_days_for_month(month):
 
     url = f"https://nationaldaycalendar.com/{month}/"
@@ -90,7 +94,10 @@ def get_national_days_for_month(month):
                   
     return month_days
 
-# TODO: Use APScheduler to execute monthly
+scheduler = BackgroundScheduler()
+scheduler.start()
+
+@scheduler.scheduled_job('cron', timezone=timezone('US/Central'), day=29, hour=19, minute=29, second=0)
 def national_days_for_month(month=None):
     try:
         # read connection parameters
