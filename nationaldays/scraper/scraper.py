@@ -1,4 +1,3 @@
-import tzlocal
 from nationaldays.config.config import config
 from urllib.request import urlopen
 import urllib
@@ -6,9 +5,8 @@ from bs4 import BeautifulSoup
 import calendar
 import re
 import psycopg2
-import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
-from datetime import datetime
+import datetime
 from pytz import timezone
  
 def get_national_days_for_month(month):
@@ -97,7 +95,7 @@ def get_national_days_for_month(month):
 scheduler = BackgroundScheduler()
 scheduler.start()
 
-@scheduler.scheduled_job('cron', timezone=timezone('US/Central'), day=29, hour=19, minute=29, second=0)
+@scheduler.scheduled_job('cron', timezone=timezone('US/Central'), day=1, hour=0, minute=0, second=1)
 def national_days_for_month(month=None):
     try:
         # read connection parameters
@@ -130,8 +128,9 @@ def national_days_for_month(month=None):
                 values.append((date, nat_day,))
         except ValueError:
             pass
+        
     # Used .format to add conflicting characters around %s 
-    cursor.execute("DELETE FROM nationaldays_day WHERE TO_CHAR(date, 'MM-DD-YYYY') LIKE (%s)", ('{}%'.format(month),))
+    cursor.execute("DELETE FROM nationaldays_day WHERE TO_CHAR(date, 'Month-DD-YYYY') LIKE (%s)", ('{}%'.format(month),))
 
     cursor.executemany("INSERT INTO nationaldays_day(date, name) VALUES (%s, %s)", (values))
     conn.commit()
