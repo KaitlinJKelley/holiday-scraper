@@ -15,6 +15,7 @@ pylint-django = "*"
 psycopg2 = "*"
 python-dotenv = "*"
 html5lib = "*"
+django-apscheduler = "*"
 
 [dev-packages]
 

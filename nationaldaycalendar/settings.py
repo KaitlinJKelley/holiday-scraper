@@ -28,7 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,7 +40,12 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'nationaldays',
+    'django_apscheduler',
 ]
+
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
+
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',

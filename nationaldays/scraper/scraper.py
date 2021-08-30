@@ -5,8 +5,10 @@ from bs4 import BeautifulSoup
 import calendar
 import re
 import psycopg2
+from apscheduler.schedulers.background import BackgroundScheduler
 import datetime
-
+from pytz import timezone
+ 
 def get_national_days_for_month(month):
 
     url = f"https://nationaldaycalendar.com/{month}/"
@@ -90,7 +92,10 @@ def get_national_days_for_month(month):
                   
     return month_days
 
-# TODO: Use APScheduler to execute monthly
+scheduler = BackgroundScheduler()
+scheduler.start()
+
+@scheduler.scheduled_job('cron', timezone=timezone('US/Central'), day=1, hour=0, minute=0, second=1)
 def national_days_for_month(month=None):
     try:
         # read connection parameters
@@ -116,22 +121,24 @@ def national_days_for_month(month=None):
     month_days = get_national_days_for_month(month)  
     
     for day in month_days:
-    #     try:
-    #         date = (datetime.datetime.strptime(f"{year}-{month}-{day}",'%Y-%B-%d'))
+        try:
+            date = (datetime.datetime.strptime(f"{year}-{month}-{day}",'%Y-%B-%d'))
 
-        for nat_day in month_days[day]:
-            values.append((month, day, year, nat_day,))
-    #     except ValueError:
-    #         pass
+            for nat_day in month_days[day]:
+                values.append((date, nat_day,))
+        except ValueError:
+            pass
+
     # Used .format to add conflicting characters around %s 
-    cursor.execute("DELETE FROM nationaldays_day WHERE month LIKE %s", (month,))
+    cursor.execute("DELETE FROM nationaldays_day WHERE TO_CHAR(date, 'Month-DD-YYYY') LIKE (%s)", ('{}%'.format(month),))
 
-    cursor.executemany("INSERT INTO nationaldays_day(month, day, year, name) VALUES (%s, %s, %s, %s);", (values))
+    cursor.executemany("INSERT INTO nationaldays_day(date, name) VALUES (%s, %s)", (values))
     conn.commit()
 
     print(f"Handled national days for {month}")
 
 # Use this function to set up the initial database
+# TODO: Implement multiprocessing with ThreadPoolExecutor
 def start_database():
     
     months = list(calendar.month_name)
