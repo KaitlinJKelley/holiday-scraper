@@ -128,7 +128,7 @@ def national_days_for_month(month=None):
                 values.append((date, nat_day,))
         except ValueError:
             pass
-        
+
     # Used .format to add conflicting characters around %s 
     cursor.execute("DELETE FROM nationaldays_day WHERE TO_CHAR(date, 'Month-DD-YYYY') LIKE (%s)", ('{}%'.format(month),))
 
@@ -138,6 +138,7 @@ def national_days_for_month(month=None):
     print(f"Handled national days for {month}")
 
 # Use this function to set up the initial database
+# TODO: Implement multiprocessing with ThreadPoolExecutor
 def start_database():
     
     months = list(calendar.month_name)
